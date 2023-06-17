@@ -5,16 +5,12 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     [SerializeField] private ProgressBarView _progressBarView;
-    private ProgressBarController _progressBarController;
-
     [SerializeField] private LoadingScreenView _loadingScreenView;
-    private LoadingScreenController _loadingScreenController;
 
+    private SceneLoader _sceneLoader;
 
-
-    private void Start()
+    private void Awake()
     {
-       // _progressBarController = new ProgressBarController(_progressBarView,3);
-       _loadingScreenController = new LoadingScreenController(_loadingScreenView);
+        _sceneLoader = new SceneLoader(this,_progressBarView,_loadingScreenView);
     }
 }

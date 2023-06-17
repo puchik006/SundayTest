@@ -12,9 +12,12 @@ public class Timer
     private MonoBehaviour _context;
 
     public Action<float> OnHasBeenUpdated;
-    public event Action OnTimeIsOver;
+    public Action OnTimeIsOver;
 
-    public Timer(MonoBehaviour context) => _context = context;
+    public Timer(MonoBehaviour context)
+    {
+        _context = context;
+    } 
 
     public void Set(float time)
     {
