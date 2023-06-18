@@ -7,32 +7,56 @@ using UnityEngine.UI;
 
 public class PictureLoader : MonoBehaviour
 {
-    private string _picURL = "http://data.ikppbb.com/test-task-unity-data/pics/67.jpg";
+    private string _picURL = "http://data.ikppbb.com/test-task-unity-data/pics/*.jpg";
 
     //[SerializeField] private Image _picture;
 
-    //[SerializeField] private 
+    [SerializeField] private int _picturesCount = 0;
 
     private void Start()
     {
-        StartCoroutine(LoadImage(_picURL));
+        //StartCoroutine(LoadImage());
         CreateFrames();
+        //CountImages();
+
+        _enlargeListTargetHeigth = _prefab.GetComponent<RectTransform>().rect.height;
     }
 
-    IEnumerator LoadImage(string url)
+    IEnumerator LoadImage()
     {
-        UnityWebRequest request = UnityWebRequestTexture.GetTexture(url);
-        yield return request.SendWebRequest();
+        for (int i = 1; i < 6; i++)
+        {
+            var url = _picURL.Replace('*', i.ToString()[0]);
+            Debug.Log("URL: " + url);
 
-        if (request.isNetworkError || request.isHttpError)
-        {
-            Debug.Log("Error: " + request.error);
+            UnityWebRequest request = UnityWebRequestTexture.GetTexture(url);
+            yield return request.SendWebRequest();
+
+            if (request.result == UnityWebRequest.Result.ConnectionError || request.result == UnityWebRequest.Result.ProtocolError)
+            {
+                Debug.Log("Error: " + request.error);
+            }
+            else
+            {
+                //Texture2D texture = ((DownloadHandlerTexture)request.downloadHandler).texture;
+                //_picture.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(.5f, .5f), 100);
+                _picturesCount++;
+            }
         }
-        else
-        {
-            //Texture2D texture = ((DownloadHandlerTexture)request.downloadHandler).texture;
-            //_picture.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(.5f, .5f), 100);
-        }
+
+        //UnityWebRequest request = UnityWebRequestTexture.GetTexture(url);
+        //yield return request.SendWebRequest();
+
+        //if (request.result == UnityWebRequest.Result.ConnectionError || request.result ==  UnityWebRequest.Result.ProtocolError)
+        //{
+        //    Debug.Log("Error: " + request.error);
+        //    _requestError = request.error;
+        //}
+        //else
+        //{
+        //    //Texture2D texture = ((DownloadHandlerTexture)request.downloadHandler).texture;
+        //    //_picture.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(.5f, .5f), 100);
+        //}
     }
 
     [SerializeField] private RectTransform _content;
@@ -48,6 +72,20 @@ public class PictureLoader : MonoBehaviour
         for (int i = 0; i < numberOfFrames; i++)
         {
              _prefabsList.Add(Instantiate(_prefab, _content));
+        }
+    }
+
+    private float _enlargeListTargetHeigth;
+
+    public void ScrollAction()
+    {
+        Debug.Log("Content: " + _enlargeListTargetHeigth);
+
+        if (_content.localPosition.y >= _enlargeListTargetHeigth)
+        {
+            _prefabsList.Add(Instantiate(_prefab, _content));
+
+            _enlargeListTargetHeigth += _prefab.GetComponent<RectTransform>().rect.height;
         }
     }
 }

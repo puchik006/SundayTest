@@ -361,7 +361,19 @@ MonoBehaviour:
   m_VerticalScrollbarSpacing: -3
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 674496964}
+        m_TargetAssemblyTypeName: PictureLoader, Assembly-CSharp
+        m_MethodName: ScrollAction
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &580085679
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -429,6 +441,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 886ae38a1a0fe96468d719e7e2f6473d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _picturesCount: 0
   _content: {fileID: 153294537}
   _viewPort: {fileID: 274587325}
   _prefab: {fileID: 7112525966352530755, guid: 4a061bda27a418e4cbd92f5db9f1bfd8, type: 3}
