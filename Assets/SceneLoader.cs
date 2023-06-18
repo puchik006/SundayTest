@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,34 +6,27 @@ using UnityEngine.SceneManagement;
 
 public class SceneLoader
 {
-    LoadingScreenView _loadingScreenView;
-    ProgressBarView _progressBarView;
-    
-    private MonoBehaviour _context;
+    private LoadingScreen _loadingScreenView;
     private Timer _timer;
+    private List<AsyncOperation> _scenesLoading = new List<AsyncOperation>();
 
-    List<AsyncOperation> _scenesLoading = new List<AsyncOperation>();
-
-    public SceneLoader(MonoBehaviour context, ProgressBarView progressBarView, LoadingScreenView loadingScreenView)
+    public SceneLoader(LoadingScreen loadingScreenView)
     {
-        _context = context;
-        _progressBarView = progressBarView;
         _loadingScreenView = loadingScreenView;
-        _timer = new Timer(_context);
+        _timer = new Timer(_loadingScreenView);
 
         SceneManager.LoadSceneAsync((int)SceneIndexes.Main, LoadSceneMode.Additive);
 
         MainSceneButtonHandler.OnButtonPressed += StartLoadingGalleryScene;
-
     }
 
     public void StartLoadingGalleryScene()
     {
         _loadingScreenView.TurnScreenOn();
 
-        _timer.Set(3);
+        _timer.Set(3); //TODO: dont forget to change for some variable
         _timer.StartCountingTime();
-        _timer.OnHasBeenUpdated += _progressBarView.ShowLoadingProgress;
+        _timer.OnHasBeenUpdated += _loadingScreenView.ShowLoadingProgress;
         _timer.OnTimeIsOver += LoadGalleryScene;
     }
 
@@ -42,7 +34,7 @@ public class SceneLoader
     {
         _scenesLoading.Add(SceneManager.UnloadSceneAsync((int)SceneIndexes.Main));
         _scenesLoading.Add(SceneManager.LoadSceneAsync((int)SceneIndexes.Gallery, LoadSceneMode.Additive));
-        _progressBarView.StartCoroutine(GetSceneLoadProgress());
+        _loadingScreenView.StartCoroutine(GetSceneLoadProgress());
     }
 
     private IEnumerator GetSceneLoadProgress()

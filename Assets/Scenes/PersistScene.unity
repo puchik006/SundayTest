@@ -167,7 +167,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df93120dc88bfb94fa403c03fe850cda, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _progressBarView: {fileID: 1527339478}
   _loadingScreenView: {fileID: 1685867163}
 --- !u!1 &400949547
 GameObject:
@@ -444,7 +443,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1527339476}
   - component: {fileID: 1527339477}
-  - component: {fileID: 1527339478}
   m_Layer: 5
   m_Name: Slider
   m_TagString: Untagged
@@ -525,19 +523,6 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &1527339478
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1527339475}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e85282795cdb5ac459b56a113b88aafe, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _loadingSlider: {fileID: 1527339477}
 --- !u!1 &1571260432
 GameObject:
   m_ObjectHideFlags: 0
@@ -733,6 +718,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _loadingScreen: {fileID: 1685867157}
+  _loadingSlider: {fileID: 1527339477}
 --- !u!1 &1821316875
 GameObject:
   m_ObjectHideFlags: 0
