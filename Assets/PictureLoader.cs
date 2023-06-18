@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
@@ -15,48 +16,43 @@ public class PictureLoader : MonoBehaviour
 
     private void Start()
     {
-        //StartCoroutine(LoadImage());
         CreateFrames();
-        //CountImages();
+
+        PicturesCountWWW();
 
         _enlargeListTargetHeigth = _prefab.GetComponent<RectTransform>().rect.height;
     }
 
-    IEnumerator LoadImage()
+    private string _urlError;
+
+    private async void PicturesCountWWW()
     {
-        for (int i = 1; i < 6; i++)
+        while(_urlError == null)
         {
-            var url = _picURL.Replace('*', i.ToString()[0]);
+            _picturesCount++;
+            var url = _picURL.Replace("*", _picturesCount.ToString());
             Debug.Log("URL: " + url);
 
             UnityWebRequest request = UnityWebRequestTexture.GetTexture(url);
-            yield return request.SendWebRequest();
+            request.SendWebRequest();
+
+            while (!request.isDone)
+            {
+                await Task.Yield();
+            }
 
             if (request.result == UnityWebRequest.Result.ConnectionError || request.result == UnityWebRequest.Result.ProtocolError)
             {
                 Debug.Log("Error: " + request.error);
+                _urlError = request.error;
+                break;
             }
             else
             {
                 //Texture2D texture = ((DownloadHandlerTexture)request.downloadHandler).texture;
                 //_picture.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(.5f, .5f), 100);
-                _picturesCount++;
             }
         }
-
-        //UnityWebRequest request = UnityWebRequestTexture.GetTexture(url);
-        //yield return request.SendWebRequest();
-
-        //if (request.result == UnityWebRequest.Result.ConnectionError || request.result ==  UnityWebRequest.Result.ProtocolError)
-        //{
-        //    Debug.Log("Error: " + request.error);
-        //    _requestError = request.error;
-        //}
-        //else
-        //{
-        //    //Texture2D texture = ((DownloadHandlerTexture)request.downloadHandler).texture;
-        //    //_picture.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(.5f, .5f), 100);
-        //}
     }
 
     [SerializeField] private RectTransform _content;
@@ -79,8 +75,6 @@ public class PictureLoader : MonoBehaviour
 
     public void ScrollAction()
     {
-        Debug.Log("Content: " + _enlargeListTargetHeigth);
-
         if (_content.localPosition.y >= _enlargeListTargetHeigth)
         {
             _prefabsList.Add(Instantiate(_prefab, _content));
