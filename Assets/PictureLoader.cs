@@ -7,22 +7,39 @@ using UnityEngine.Networking;
 using UnityEngine.UI;
 using static System.Net.Mime.MediaTypeNames;
 
-public class PictureLoader : MonoBehaviour
+public class PictureLoader
 {
     private string _picURL = "http://data.ikppbb.com/test-task-unity-data/pics/*.jpg";
 
-    [SerializeField] private Sprite _tempSrite;
+    private float _enlargeListTargetHeigth;
+    private float _contentSpacingHalfHeight;
 
-    private void Start()
+    private string _urlError;
+
+    private GalleryView _galleryView;
+
+    private RectTransform _content;
+    private RectTransform _viewPort;
+    private GameObject _prefab;
+
+    private Sprite _tempSrite;
+    public PictureLoader(ref GalleryView galleryView)
     {
-        CreateFramesAsync();
+        _galleryView = galleryView;
+        
+        _content = _galleryView.Content;
+        _tempSrite = _galleryView.TempSrite;
+        _viewPort = _galleryView.ViewPort;
+        _prefab = _galleryView.Prefab;
 
         _enlargeListTargetHeigth = _prefab.GetComponent<RectTransform>().rect.height;
 
-        _contentSpacingHalfHeight = _content.GetComponent<VerticalLayoutGroup>().spacing/2;
+        _contentSpacingHalfHeight = _content.GetComponent<VerticalLayoutGroup>().spacing / 2;
+
+        CreateFramesAsync();
+
     }
 
-    private string _urlError;
 
     private async Task<Sprite> LoadImageAsync(int picNumber)
     {
@@ -46,23 +63,23 @@ public class PictureLoader : MonoBehaviour
         else
         {
             Texture2D texture = ((DownloadHandlerTexture)request.downloadHandler).texture;
-            return Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(.5f, .5f), 100);        
-        }   
+            return Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(.5f, .5f), 100);
+        }
     }
 
-    [SerializeField] private RectTransform _content;
-    [SerializeField] private RectTransform _viewPort;
-    [SerializeField] private GameObject _prefab;
+
 
     private List<GameObject> _prefabsList = new List<GameObject>();
 
     private async void CreateFramesAsync()
     {
-        float numberOfFrames = _viewPort.rect.height / _prefab.GetComponent<RectTransform>().rect.height;
+        float numberOfFrames = 6; //_viewPort.rect.height / _prefab.GetComponent<RectTransform>().rect.height;
 
         for (int i = 0; i < numberOfFrames; i++)
         {
-             _prefabsList.Add(Instantiate(_prefab, _content));
+            //_prefabsList.Add(Instantiate(_prefab, _content));
+
+            _prefabsList.Add(UnityEngine.Object.Instantiate(_prefab, _content));
         }
 
         for (int i = 0; i < _prefabsList.Count; i++)
@@ -72,15 +89,17 @@ public class PictureLoader : MonoBehaviour
         }
     }
 
-    private float _enlargeListTargetHeigth;
-    private float _contentSpacingHalfHeight;
+
 
     public async void ScrollAction()
     {
         if (_content.localPosition.y >= _enlargeListTargetHeigth)
         {
             GameObject aaa;
-            _prefabsList.Add(aaa = Instantiate(_prefab, _content));
+
+            // aaa = UnityEngine.Object.Instantiate(_prefab, _content);
+
+            _prefabsList.Add(aaa = UnityEngine.Object.Instantiate(_prefab, _content));
             var i = _prefabsList.IndexOf(aaa);
             aaa.GetComponent<GalleryStringView>().ImageOne.sprite = await LoadImageAsync(i + i + 1);
             aaa.GetComponent<GalleryStringView>().ImageTwo.sprite = await LoadImageAsync(i + i + 2);
