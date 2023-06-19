@@ -11,13 +11,15 @@ public class PictureLoader : MonoBehaviour
 {
     private string _picURL = "http://data.ikppbb.com/test-task-unity-data/pics/*.jpg";
 
-    //[SerializeField] private Image _picture;
+    [SerializeField] private Sprite _tempSrite;
 
     private void Start()
     {
         CreateFramesAsync();
 
         _enlargeListTargetHeigth = _prefab.GetComponent<RectTransform>().rect.height;
+
+        _contentSpacingHalfHeight = _content.GetComponent<VerticalLayoutGroup>().spacing/2;
     }
 
     private string _urlError;
@@ -39,7 +41,7 @@ public class PictureLoader : MonoBehaviour
         {
             Debug.Log("Error: " + request.error);
             _urlError = request.error;
-            return null;
+            return _tempSrite;
         }
         else
         {
@@ -71,19 +73,19 @@ public class PictureLoader : MonoBehaviour
     }
 
     private float _enlargeListTargetHeigth;
+    private float _contentSpacingHalfHeight;
 
     public async void ScrollAction()
     {
         if (_content.localPosition.y >= _enlargeListTargetHeigth)
         {
-            _prefabsList.Add(Instantiate(_prefab, _content));
+            GameObject aaa;
+            _prefabsList.Add(aaa = Instantiate(_prefab, _content));
+            var i = _prefabsList.IndexOf(aaa);
+            aaa.GetComponent<GalleryStringView>().ImageOne.sprite = await LoadImageAsync(i + i + 1);
+            aaa.GetComponent<GalleryStringView>().ImageTwo.sprite = await LoadImageAsync(i + i + 2);
 
-            _enlargeListTargetHeigth += _prefab.GetComponent<RectTransform>().rect.height;
+            _enlargeListTargetHeigth += _prefab.GetComponent<RectTransform>().rect.height + _contentSpacingHalfHeight;
         }
-
-        //var i = _prefabsList.Count;
-
-        //_prefabsList[i].GetComponent<GalleryStringView>().ImageOne.sprite = await LoadImageAsync(i + i + 1);
-        //_prefabsList[i].GetComponent<GalleryStringView>().ImageTwo.sprite = await LoadImageAsync(i + i + 2);
     }
 }

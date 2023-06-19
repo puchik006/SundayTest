@@ -441,7 +441,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 886ae38a1a0fe96468d719e7e2f6473d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _picturesCount: 0
+  _tempSrite: {fileID: 21300000, guid: 80cedefeef98a2f4fb20e6c53ec9baef, type: 3}
   _content: {fileID: 153294537}
   _viewPort: {fileID: 274587325}
   _prefab: {fileID: 7112525966352530755, guid: 4a061bda27a418e4cbd92f5db9f1bfd8, type: 3}
