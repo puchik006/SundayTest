@@ -3,10 +3,12 @@
 public class PictureManager: MonoBehaviour
 {
     [SerializeField] private GalleryView _galleryView;
-    private PictureLoader _pictureLoader;
+    private ScrollViewHandler _scrollViewHandler;
+    private PrefabImageLoader _pictureLoaderPrefabImageLoader;
 
     private void Awake()
     {
-        _pictureLoader = new PictureLoader(ref _galleryView);
+        _pictureLoaderPrefabImageLoader = new PrefabImageLoader();
+        _scrollViewHandler = new ScrollViewHandler(_galleryView);
     }
 }
