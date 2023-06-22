@@ -1,23 +1,26 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking;
 
 public class PrefabImageLoader
 {
     private string _picURL = "http://data.ikppbb.com/test-task-unity-data/pics/*.jpg";
+    public static Action OnError;
 
     public PrefabImageLoader()
     {
         GalleryStringView.OnFrameCreated += ImageLoader;
     }
 
-    private async void ImageLoader(GameObject gameObject, int imageNumber)
+    private async void ImageLoader(GameObject gameObject, int frameNumber)
     {
-        int i = imageNumber;
-        gameObject.GetComponent<GalleryStringView>().ImageOne.sprite = await LoadImageAsync(1 + (i - 1) * 2);
-        gameObject.GetComponent<GalleryStringView>().ImageTwo.sprite = await LoadImageAsync(1 + (i - 1) * 2 + 1);
+        int i = frameNumber;
+        int imageOneNumber = 1 + (i - 1) * 2;
+        int imageTwoNumber = 1 + (i - 1) * 2 + 1;
 
-        Debug.Log(1 + (i - 1) * 2);
+        gameObject.GetComponent<GalleryStringView>().ImageOne.sprite = await LoadImageAsync(imageOneNumber);
+        gameObject.GetComponent<GalleryStringView>().ImageTwo.sprite = await LoadImageAsync(imageTwoNumber);
     }
 
     private async Task<Sprite> LoadImageAsync(int picNumber)
@@ -34,6 +37,7 @@ public class PrefabImageLoader
         if (request.result == UnityWebRequest.Result.ConnectionError || request.result == UnityWebRequest.Result.ProtocolError)
         {
             Debug.Log("Error: " + request.error + " " + _picURL);
+            OnError?.Invoke();
             return null;
         }
         else

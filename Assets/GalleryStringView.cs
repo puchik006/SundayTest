@@ -4,7 +4,8 @@ using UnityEngine.UI;
 
 public class GalleryStringView : MonoBehaviour
 {
-    private static int _frameNumber = 1;
+    private static int _rowsQuantity = 1;
+    private int _rowNumber;
 
     [SerializeField] private Image _imageOne;
     [SerializeField] private Image _imageTwo;
@@ -16,7 +17,17 @@ public class GalleryStringView : MonoBehaviour
 
     private void Awake()
     {
-        OnFrameCreated?.Invoke(gameObject,_frameNumber++);
-        Debug.Log(_frameNumber);
+        _rowNumber = _rowsQuantity;
+        OnFrameCreated?.Invoke(gameObject,_rowsQuantity++);
+        //PrefabImageLoader.OnError += DeleteEmptyRow;
     }
+
+    //private void DeleteEmptyRow()
+    //{
+    //    if (_imageOne.sprite == null)
+    //    {
+    //        Debug.Log("Row " + _rowNumber + "is empty");
+    //        Destroy(gameObject);
+    //    }
+    //}
 }
