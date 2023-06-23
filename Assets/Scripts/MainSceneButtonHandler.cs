@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class MainSceneButtonHandler : MonoBehaviour
 {
     private Button _btnGallery;
-    public static event Action OnButtonPressed;
+    public static Action OnButtonPressed;
 
     private void Awake()
     {

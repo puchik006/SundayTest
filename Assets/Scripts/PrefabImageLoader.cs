@@ -6,15 +6,19 @@ using UnityEngine.Networking;
 public class PrefabImageLoader
 {
     private string _picURL = "http://data.ikppbb.com/test-task-unity-data/pics/*.jpg";
+    private bool _isLoadingApproved;
     public static Action OnError;
 
     public PrefabImageLoader()
     {
+        _isLoadingApproved = true;
         GalleryStringView.OnFrameCreated += ImageLoader;
     }
 
     private async void ImageLoader(GameObject gameObject, int frameNumber)
     {
+        if (!_isLoadingApproved) return;
+
         int i = frameNumber;
         int imageOneNumber = 1 + (i - 1) * 2;
         int imageTwoNumber = 1 + (i - 1) * 2 + 1;
@@ -36,7 +40,8 @@ public class PrefabImageLoader
 
         if (request.result == UnityWebRequest.Result.ConnectionError || request.result == UnityWebRequest.Result.ProtocolError)
         {
-            Debug.Log("Error: " + request.error + " " + _picURL);
+            Debug.Log("Error: " + request.error + " " + url);
+            _isLoadingApproved = false;
             OnError?.Invoke();
             return null;
         }

@@ -19,15 +19,10 @@ public class GalleryStringView : MonoBehaviour
     {
         _rowNumber = _rowsQuantity;
         OnFrameCreated?.Invoke(gameObject,_rowsQuantity++);
-        //PrefabImageLoader.OnError += DeleteEmptyRow;
     }
 
-    //private void DeleteEmptyRow()
-    //{
-    //    if (_imageOne.sprite == null)
-    //    {
-    //        Debug.Log("Row " + _rowNumber + "is empty");
-    //        Destroy(gameObject);
-    //    }
-    //}
+    private void OnDisable()
+    {
+        _rowsQuantity = 1;
+    }
 }

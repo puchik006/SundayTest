@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -30,9 +29,9 @@ public class ScrollViewHandler
         _enlargeContentTriggerHeight = _prefabHeigth;
 
         _galleryView.OnScroll += EnlargeContentOnScrolling;
-        PrefabImageLoader.OnError += StopEnlargingContent;
+        PrefabImageLoader.OnError += StopEnlargingContentAndDeleteEmptyRows;
 
-        CreateInitialRows();
+        CreateInitialRows();      
     }
 
     private void CreateInitialRows()
@@ -47,29 +46,32 @@ public class ScrollViewHandler
 
     private void EnlargeContentOnScrolling()
     {
-        if (_content.localPosition.y > _enlargeContentTriggerHeight && _isAllowToEnlargeContent)
+        if (!_isAllowToEnlargeContent) return;
+
+        if (_content.localPosition.y > _enlargeContentTriggerHeight)
         {
             _prefabsList.Add(Object.Instantiate(_prefab, _content));
             _enlargeContentTriggerHeight += _prefabHeigth + _contentSpacingHalfHeight;
         }
     }
 
-    private void StopEnlargingContent()
+    private void StopEnlargingContentAndDeleteEmptyRows()
     {
         _isAllowToEnlargeContent = false;
 
-        foreach (var item in _prefabsList)
-        {
-            if (item.GetComponent<GalleryStringView>().ImageOne.sprite == null)
-            {
-                Object.Destroy(item);
-            }
-        }
+        Debug.Log(_isAllowToEnlargeContent);
 
-        //Object.Destroy(_content.GetChild(_prefabsList.Count - 2).GetComponent<GameObject>());
-        //Object.Destroy(_content.GetChild(_prefabsList.Count - 3).GetComponent<GameObject>());
-
-        //Debug.Log("Delete: " + _prefabsList.Count);
+        //foreach (var item in _prefabsList)
+        //{
+        //    if (item.GetComponent<GalleryStringView>().ImageOne.sprite == null)
+        //    {
+        //        if (item != null)
+        //        {
+        //            Object.Destroy(item);
+        //            _prefabsList.Remove(item);
+        //        }
+        //    }
+        //}
     }
 }
 
