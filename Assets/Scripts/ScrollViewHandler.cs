@@ -28,10 +28,15 @@ public class ScrollViewHandler
         _contentSpacingHalfHeight = _content.GetComponent<VerticalLayoutGroup>().spacing / 2;
         _enlargeContentTriggerHeight = _prefabHeigth;
 
-        _galleryView.OnScroll += EnlargeContentOnScrolling;
-        PrefabImageLoader.OnError += StopEnlargingContentAndDeleteEmptyRows;
+        CreateInitialRows();
 
-        CreateInitialRows();      
+        PrefabImageLoader.OnError += StopEnlargingContent;
+        _galleryView.OnScroll += EnlargeContentOnScrolling;
+    }
+
+    private void StopEnlargingContent(int imageNumber)
+    {
+        _isAllowToEnlargeContent = false;
     }
 
     private void CreateInitialRows()
@@ -54,27 +59,4 @@ public class ScrollViewHandler
             _enlargeContentTriggerHeight += _prefabHeigth + _contentSpacingHalfHeight;
         }
     }
-
-    private void StopEnlargingContentAndDeleteEmptyRows()
-    {
-        _isAllowToEnlargeContent = false;
-
-        Debug.Log(_isAllowToEnlargeContent);
-
-        //foreach (var item in _prefabsList)
-        //{
-        //    if (item.GetComponent<GalleryStringView>().ImageOne.sprite == null)
-        //    {
-        //        if (item != null)
-        //        {
-        //            Object.Destroy(item);
-        //            _prefabsList.Remove(item);
-        //        }
-        //    }
-        //}
-    }
 }
-
-
-
-
