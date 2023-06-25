@@ -20,7 +20,11 @@ public class PrefabImageLoader
         int imageTwoNumber = 1 + (i - 1) * 2 + 1;
 
         gameObject.GetComponent<GalleryStringView>().ImageOne.sprite = await LoadImageAsync(imageOneNumber);
-        gameObject.GetComponent<GalleryStringView>().ImageTwo.sprite = await LoadImageAsync(imageTwoNumber);
+
+        if (!LoadImageAsync(imageOneNumber).IsFaulted)
+        {
+            gameObject.GetComponent<GalleryStringView>().ImageTwo.sprite = await LoadImageAsync(imageTwoNumber);
+        }
     }
 
     private async Task<Sprite> LoadImageAsync(int picNumber)

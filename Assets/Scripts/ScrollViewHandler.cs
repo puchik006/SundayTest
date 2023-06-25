@@ -51,12 +51,12 @@ public class ScrollViewHandler
 
         for (int i = 0; i < numberOfRows; i++)
         {
-           if (await _linkImageChecker.CheckImageRoutine(i))
-            {
+           //if (await _linkImageChecker.CheckImageRoutine(i))
+           // {
                 var galleryString = Object.Instantiate(_prefab, _content);
                 _prefabsList.Add(galleryString);
                 OnStringCreated?.Invoke(galleryString, _prefabsList.IndexOf(galleryString) + 1);
-            }
+           // }
         }
     }
 
