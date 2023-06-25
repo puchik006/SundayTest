@@ -1,11 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Object = UnityEngine.Object;
 
 public class ScrollViewHandler
 {
-    private GalleryView _galleryView;
-
     private RectTransform _content;
     private RectTransform _viewPort;
     private GameObject _prefab;
@@ -16,36 +16,47 @@ public class ScrollViewHandler
     private float _enlargeContentTriggerHeight;
     private bool _isAllowToEnlargeContent = true;
 
-    public ScrollViewHandler(GalleryView galleryView)
-    {
-        _galleryView = galleryView;
+    public static Action<GameObject,int> OnStringCreated;
 
-        _content = _galleryView.Content;
-        _viewPort = _galleryView.ViewPort;
-        _prefab = _galleryView.Prefab;
+    private LinkImageChecker _linkImageChecker;
+
+    public ScrollViewHandler()
+    {
+        GalleryView.OnAwake += GetGalleryViewData;
+        GalleryView.OnScroll += EnlargeContentOnScrolling;
+        PrefabImageLoader.OnError += StopEnlargingContent;
+
+        _linkImageChecker = new LinkImageChecker();
+    }
+
+    private void GetGalleryViewData(GalleryView galleryView)
+    {
+        _content = galleryView.Content;
+        _viewPort = galleryView.ViewPort;
+        _prefab = galleryView.Prefab;
 
         _prefabHeigth = _prefab.GetComponent<RectTransform>().rect.height;
         _contentSpacingHalfHeight = _content.GetComponent<VerticalLayoutGroup>().spacing / 2;
         _enlargeContentTriggerHeight = _prefabHeigth;
 
+        _prefabsList.Clear();
+        _isAllowToEnlargeContent = true;
+
         CreateInitialRows();
-
-        PrefabImageLoader.OnError += StopEnlargingContent;
-        _galleryView.OnScroll += EnlargeContentOnScrolling;
     }
 
-    private void StopEnlargingContent(int imageNumber)
-    {
-        _isAllowToEnlargeContent = false;
-    }
-
-    private void CreateInitialRows()
+    private async void CreateInitialRows()
     {
         float numberOfRows = _viewPort.rect.height / _prefabHeigth;
 
         for (int i = 0; i < numberOfRows; i++)
         {
-            _prefabsList.Add(Object.Instantiate(_prefab, _content));
+           if (await _linkImageChecker.CheckImageRoutine(i))
+            {
+                var galleryString = Object.Instantiate(_prefab, _content);
+                _prefabsList.Add(galleryString);
+                OnStringCreated?.Invoke(galleryString, _prefabsList.IndexOf(galleryString) + 1);
+            }
         }
     }
 
@@ -55,8 +66,19 @@ public class ScrollViewHandler
 
         if (_content.localPosition.y > _enlargeContentTriggerHeight)
         {
-            _prefabsList.Add(Object.Instantiate(_prefab, _content));
+            var galleryString = Object.Instantiate(_prefab, _content);
+            _prefabsList.Add(galleryString);
+            OnStringCreated?.Invoke(galleryString, _prefabsList.IndexOf(galleryString) + 1);
             _enlargeContentTriggerHeight += _prefabHeigth + _contentSpacingHalfHeight;
         }
+    }
+
+    private void StopEnlargingContent(int imageNumber)
+    {
+        _isAllowToEnlargeContent = false;
+
+        Debug.Log("Delete row: " + imageNumber / 2);
+        Object.Destroy(_prefabsList[imageNumber / 2]);
+        _prefabsList.RemoveAt(imageNumber / 2);
     }
 }

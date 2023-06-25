@@ -1,53 +1,28 @@
-﻿using System.Collections;
-using UnityEngine;
+﻿using System.Threading.Tasks;
 using UnityEngine.Networking;
 
-public class LinkImageChecker: MonoBehaviour
+public class LinkImageChecker
 {
     private string _picURL = "http://data.ikppbb.com/test-task-unity-data/pics/*.jpg";
 
-    private void Start()
+    public async Task<bool> CheckImageRoutine(int imageNumber)
     {
-        CheckImage();
-    }
+        var url = _picURL.Replace("*", imageNumber.ToString());
+        UnityWebRequest request = UnityWebRequest.Get(url);
+        request.SendWebRequest();
 
-    public void CheckImage()
-    {
-        int maxImageNumber = -1;
-
-        StartCoroutine(CheckImageRoutine(maxImageNumber));
-    }
-
-    private IEnumerator CheckImageRoutine(int maxImageNumber)
-    {
-        int i = 1;
-
-        while (true)
+        while (!request.isDone)
         {
-            var url = _picURL.Replace("*", i.ToString());
-            UnityWebRequest request = UnityWebRequest.Get(url);
-            yield return request.SendWebRequest();
-
-            if (request.result == UnityWebRequest.Result.ConnectionError || request.result == UnityWebRequest.Result.ProtocolError)
-            {
-                maxImageNumber = i - 1;
-                Debug.Log("Max image number: " + maxImageNumber);
-                break;
-            }
-            else
-            {
-                Debug.Log("Current number: " + i);
-            }
-
-            i++;
+            await Task.Yield();
         }
 
-        if (maxImageNumber == -1)
+        if (request.result == UnityWebRequest.Result.ConnectionError || request.result == UnityWebRequest.Result.ProtocolError)
         {
-            Debug.Log("No images found.");
+            return false;
         }
-
-        
-        //onMaxImageNumberFound?.Invoke(maxImageNumber);
+        else
+        {
+            return true;
+        }
     }
 }

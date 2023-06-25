@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -11,12 +10,12 @@ public class PrefabImageLoader
 
     public PrefabImageLoader()
     {
-        GalleryStringView.OnFrameCreated += ImageLoader;
+        ScrollViewHandler.OnStringCreated += ImageLoader;
     }
 
-    private async void ImageLoader(GameObject gameObject, int frameNumber)
+    private async void ImageLoader(GameObject gameObject, int stringNumber)
     {
-        int i = frameNumber;
+        int i = stringNumber;
         int imageOneNumber = 1 + (i - 1) * 2;
         int imageTwoNumber = 1 + (i - 1) * 2 + 1;
 

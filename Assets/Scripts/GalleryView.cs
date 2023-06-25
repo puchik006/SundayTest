@@ -11,10 +11,16 @@ public class GalleryView : MonoBehaviour
     public RectTransform ViewPort { get => _viewPort;}
     public GameObject Prefab { get => _prefab;}
 
-    public Action OnScroll;
+    public static Action OnScroll;
+    public static Action<GalleryView> OnAwake;
 
     public void ScrollAction()
     {
         OnScroll?.Invoke();
+    }
+
+    private void Awake()
+    {
+        OnAwake?.Invoke(this);
     }
 }
