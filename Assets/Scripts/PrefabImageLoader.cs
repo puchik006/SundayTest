@@ -27,7 +27,6 @@ public class PrefabImageLoader
         else
         {
             Texture2D texture = ((DownloadHandlerTexture)request.downloadHandler).texture;
-            Debug.Log(url);
             return Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(.5f, .5f), 100);
         }
     }

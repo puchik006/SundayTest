@@ -21,7 +21,7 @@ public class SceneLoader
         _scenes.Push((int)SceneIndexes.Main);
 
         MainSceneButtonHandler.OnButtonPressed += () => StartLoadingScene(SceneIndexes.Gallery);
-        ImageButtonHandler.OnButtonPressed += () => StartLoadingScene(SceneIndexes.FullPaigeView);
+        ScrollViewHandler.OnButtonPressed += () => StartLoadingScene(SceneIndexes.FullPaigeView);
         ExitButtonHandler.OnButtonPressed += () => StartLoadingScene(SceneIndexes.Gallery);
     }
 

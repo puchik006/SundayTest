@@ -19,6 +19,8 @@ public class ScrollViewHandler
 
     private PrefabImageLoader _imageLoader;
 
+    private List<Button> _galleryButtons = new List<Button>();
+
     public ScrollViewHandler()
     {
         GalleryView.OnAwake += GetGalleryViewData;
@@ -36,9 +38,8 @@ public class ScrollViewHandler
 
         _prefabHeight = _prefab.GetComponent<RectTransform>().rect.height;
         _contentSpacingHeight = _content.GetComponent<GridLayoutGroup>().spacing.y;
-        float topPadding = _content.GetComponent<GridLayoutGroup>().padding.top;
 
-        _enlargeContentTriggerHeight = topPadding + _prefabHeight + _contentSpacingHeight / 2;
+        _enlargeContentTriggerHeight = _prefabHeight/3;
 
         _imageNumbersList.Clear();
         _isAllowToEnlargeContent = true;
@@ -50,21 +51,24 @@ public class ScrollViewHandler
     {
         float numberOfRows = _viewPort.rect.height / _prefabHeight;
 
-        for (int i = 1; i < numberOfRows * 2 + 2; i++)
+        for (int i = 1; i < numberOfRows * 2; i++)
         {
             await LoadAndInstantiateImageAsync(i);
         }
     }
 
-    async Task LoadAndInstantiateImageAsync(int i)
-    {
-        var sprite = await _imageLoader.LoadImageAsync(i);
+    public static Action OnButtonPressed;
 
-        if (sprite != null && !_imageNumbersList.Contains(i))
+    async Task LoadAndInstantiateImageAsync(int imageNumber)
+    {
+        var sprite = await _imageLoader.LoadImageAsync(imageNumber);
+
+        if (sprite != null && !_imageNumbersList.Contains(imageNumber))
         {
-            _imageNumbersList.Add(i);
+            _imageNumbersList.Add(imageNumber);
             var prefab = Object.Instantiate(_prefab, _content);
-            prefab.GetComponent<GalleryStringView>().ImageOne.sprite = sprite;
+            prefab.GetComponentInChildren<Image>().sprite = sprite;
+            prefab.GetComponentInChildren<Button>().onClick.AddListener(() => OnButtonPressed?.Invoke());
         }
     }
 
