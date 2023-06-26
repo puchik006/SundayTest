@@ -8,16 +8,6 @@ public class PrefabImageLoader
     private string _picURL = "http://data.ikppbb.com/test-task-unity-data/pics/*.jpg";
     public static Action<int> OnError;
 
-    public PrefabImageLoader()
-    {
-        ScrollViewHandler.OnStringCreated += ImageLoader;
-    }
-
-    private async void ImageLoader(GameObject gameObject, int imageNumber)
-    {
-        gameObject.GetComponent<GalleryStringView>().ImageOne.sprite = await LoadImageAsync(imageNumber);
-    }
-
     public async Task<Sprite> LoadImageAsync(int picNumber)
     {
         var url = _picURL.Replace("*", (picNumber).ToString());

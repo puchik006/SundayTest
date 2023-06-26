@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
@@ -9,17 +10,14 @@ public class ScrollViewHandler
     private RectTransform _content;
     private RectTransform _viewPort;
     private GameObject _prefab;
-    private List<GameObject> _prefabsList = new List<GameObject>();
+    private List<int> _imageNumbersList = new List<int>();
 
-    private float _prefabHeigth;
-    private float _contentSpacingHalfHeight;
+    private float _prefabHeight;
+    private float _contentSpacingHeight;
     private float _enlargeContentTriggerHeight;
     private bool _isAllowToEnlargeContent = true;
 
-    public static Action<GameObject,int> OnStringCreated;
-
     private PrefabImageLoader _imageLoader;
-
 
     public ScrollViewHandler()
     {
@@ -36,11 +34,13 @@ public class ScrollViewHandler
         _viewPort = galleryView.ViewPort;
         _prefab = galleryView.Prefab;
 
-        _prefabHeigth = _prefab.GetComponent<RectTransform>().rect.height;
-        _contentSpacingHalfHeight = _content.GetComponent<GridLayoutGroup>().spacing.y / 2;
-        _enlargeContentTriggerHeight = _prefabHeigth;
+        _prefabHeight = _prefab.GetComponent<RectTransform>().rect.height;
+        _contentSpacingHeight = _content.GetComponent<GridLayoutGroup>().spacing.y;
+        float topPadding = _content.GetComponent<GridLayoutGroup>().padding.top;
 
-        _prefabsList.Clear();
+        _enlargeContentTriggerHeight = topPadding + _prefabHeight + _contentSpacingHeight / 2;
+
+        _imageNumbersList.Clear();
         _isAllowToEnlargeContent = true;
 
         CreateInitialRows();
@@ -48,56 +48,41 @@ public class ScrollViewHandler
 
     private async void CreateInitialRows()
     {
-        float numberOfRows = _viewPort.rect.height / _prefabHeigth;
+        float numberOfRows = _viewPort.rect.height / _prefabHeight;
 
         for (int i = 1; i < numberOfRows * 2 + 2; i++)
         {
-            var sprite = await _imageLoader.LoadImageAsync(i);
-
-            if (sprite != null)
-            {
-                var prefab = Object.Instantiate(_prefab, _content);
-                _prefabsList.Add(prefab);
-                prefab.GetComponent<GalleryStringView>().ImageOne.sprite = sprite;
-            }
+            await LoadAndInstantiateImageAsync(i);
         }
     }
 
-    private int i = 1;
+    async Task LoadAndInstantiateImageAsync(int i)
+    {
+        var sprite = await _imageLoader.LoadImageAsync(i);
+
+        if (sprite != null && !_imageNumbersList.Contains(i))
+        {
+            _imageNumbersList.Add(i);
+            var prefab = Object.Instantiate(_prefab, _content);
+            prefab.GetComponent<GalleryStringView>().ImageOne.sprite = sprite;
+        }
+    }
 
     private async void EnlargeContentOnScrolling()
     {
-        Debug.Log("Content position " + _content.localPosition.y + " cont height " + _content.rect.height + " " + 
-            _viewPort.rect.height + " " + _viewPort.localPosition.y);
+        if (!_isAllowToEnlargeContent) return;
 
-        //if (!_isAllowToEnlargeContent) return;
+        if (_content.localPosition.y > _enlargeContentTriggerHeight)
+        {
+            _enlargeContentTriggerHeight += _prefabHeight;
 
-        //if (_content.localPosition.y > _enlargeContentTriggerHeight)
-        //{
-        //    //var galleryString = Object.Instantiate(_prefab, _content);
-        //    //_prefabsList.Add(galleryString);
-        //    //OnStringCreated?.Invoke(galleryString, _prefabsList.IndexOf(galleryString) + 1);
-        //    //_enlargeContentTriggerHeight += _prefabHeigth + _contentSpacingHalfHeight;
-
-        //    var sprite = await _imageLoader.LoadImageAsync(_prefabsList.Count + i);
-
-        //    if (sprite != null)
-        //    {
-        //        var prefab = Object.Instantiate(_prefab, _content);
-        //        _prefabsList.Add(prefab);
-        //        prefab.GetComponent<GalleryStringView>().ImageOne.sprite = sprite;
-        //        //_enlargeContentTriggerHeight += _prefabHeigth + _contentSpacingHalfHeight;
-        //        i++;
-        //    }
-        //}
+            await LoadAndInstantiateImageAsync(_imageNumbersList.Count + 1);
+            await LoadAndInstantiateImageAsync(_imageNumbersList.Count + 1);
+        }
     }
 
     private void StopEnlargingContent(int imageNumber)
     {
         _isAllowToEnlargeContent = false;
-
-        Debug.Log("Delete row: " + imageNumber / 2);
-        Object.Destroy(_prefabsList[imageNumber / 2]);
-        _prefabsList.RemoveAt(imageNumber / 2);
     }
 }
