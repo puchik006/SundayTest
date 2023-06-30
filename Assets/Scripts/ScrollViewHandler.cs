@@ -25,7 +25,8 @@ public class ScrollViewHandler
         _viewPort = galleryView.ViewPort;
         _prefab = galleryView.Prefab;
 
-        _prefabInstantiator = new PrefabInstantiator(_prefab, _content);
+        _prefabInstantiator = new PrefabInstantiator(_prefab, _content, galleryView);
+
         _prefabHeight = _prefab.GetComponent<RectTransform>().rect.height;
         _enlargeContentTriggerHeight = _prefabHeight/3;
 
@@ -34,25 +35,34 @@ public class ScrollViewHandler
         CreateInitialRows();
     }
 
-    private async void CreateInitialRows()
+    //private async void CreateInitialRows()
+    //{
+    //    float numberOfRows = _viewPort.rect.height / _prefabHeight;
+
+    //    for (int i = 1; i < numberOfRows * 2; i++)
+    //    {
+    //        await _prefabInstantiator.LoadAndInstantiatePrefabAsync();
+    //    }
+    //}
+
+    private void CreateInitialRows()
     {
         float numberOfRows = _viewPort.rect.height / _prefabHeight;
 
         for (int i = 1; i < numberOfRows * 2; i++)
         {
-            await _prefabInstantiator.LoadAndInstantiatePrefabAsync();
+            _prefabInstantiator.LoadAndInstantiatePrefab();
         }
     }
 
-    private async void EnlargeContentOnScrolling()
+    private void EnlargeContentOnScrolling()
     {
         if (!_isAllowToEnlargeContent) return;
 
         if (_content.localPosition.y > _enlargeContentTriggerHeight)
         {
-            _enlargeContentTriggerHeight += _prefabHeight/10;
-
-            await _prefabInstantiator.LoadAndInstantiatePrefabAsync();
+            _enlargeContentTriggerHeight += _prefabHeight/2;
+            _prefabInstantiator.LoadAndInstantiatePrefab();
         }
     }
 
@@ -60,9 +70,4 @@ public class ScrollViewHandler
     {
         _isAllowToEnlargeContent = false;
     }
-}
-
-public class ImageHolder
-{
-    public static Sprite _tempSprite;
 }
