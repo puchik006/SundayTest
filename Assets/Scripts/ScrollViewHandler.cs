@@ -35,16 +35,6 @@ public class ScrollViewHandler
         CreateInitialRows();
     }
 
-    //private async void CreateInitialRows()
-    //{
-    //    float numberOfRows = _viewPort.rect.height / _prefabHeight;
-
-    //    for (int i = 1; i < numberOfRows * 2; i++)
-    //    {
-    //        await _prefabInstantiator.LoadAndInstantiatePrefabAsync();
-    //    }
-    //}
-
     private void CreateInitialRows()
     {
         float numberOfRows = _viewPort.rect.height / _prefabHeight;
