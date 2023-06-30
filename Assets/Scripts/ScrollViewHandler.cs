@@ -1,33 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using UnityEngine;
-using UnityEngine.UI;
-using Object = UnityEngine.Object;
+﻿using UnityEngine;
 
 public class ScrollViewHandler
 {
+    private PrefabInstantiator _prefabInstantiator;
+
     private RectTransform _content;
     private RectTransform _viewPort;
     private GameObject _prefab;
-    private List<int> _imageNumbersList = new List<int>();
 
     private float _prefabHeight;
-    private float _contentSpacingHeight;
     private float _enlargeContentTriggerHeight;
     private bool _isAllowToEnlargeContent = true;
-
-    private PrefabImageLoader _imageLoader;
-
-    private List<Button> _galleryButtons = new List<Button>();
 
     public ScrollViewHandler()
     {
         GalleryView.OnAwake += GetGalleryViewData;
         GalleryView.OnScroll += EnlargeContentOnScrolling;
         PrefabImageLoader.OnError += StopEnlargingContent;
-
-        _imageLoader = new PrefabImageLoader();
     }
 
     private void GetGalleryViewData(GalleryView galleryView)
@@ -36,12 +25,10 @@ public class ScrollViewHandler
         _viewPort = galleryView.ViewPort;
         _prefab = galleryView.Prefab;
 
+        _prefabInstantiator = new PrefabInstantiator(_prefab, _content);
         _prefabHeight = _prefab.GetComponent<RectTransform>().rect.height;
-        _contentSpacingHeight = _content.GetComponent<GridLayoutGroup>().spacing.y;
-
         _enlargeContentTriggerHeight = _prefabHeight/3;
 
-        _imageNumbersList.Clear();
         _isAllowToEnlargeContent = true;
 
         CreateInitialRows();
@@ -53,22 +40,7 @@ public class ScrollViewHandler
 
         for (int i = 1; i < numberOfRows * 2; i++)
         {
-            await LoadAndInstantiateImageAsync(i);
-        }
-    }
-
-    public static Action OnButtonPressed;
-
-    async Task LoadAndInstantiateImageAsync(int imageNumber)
-    {
-        var sprite = await _imageLoader.LoadImageAsync(imageNumber);
-
-        if (sprite != null && !_imageNumbersList.Contains(imageNumber))
-        {
-            _imageNumbersList.Add(imageNumber);
-            var prefab = Object.Instantiate(_prefab, _content);
-            prefab.GetComponentInChildren<Image>().sprite = sprite;
-            prefab.GetComponentInChildren<Button>().onClick.AddListener(() => OnButtonPressed?.Invoke());
+            await _prefabInstantiator.LoadAndInstantiatePrefabAsync();
         }
     }
 
@@ -78,10 +50,9 @@ public class ScrollViewHandler
 
         if (_content.localPosition.y > _enlargeContentTriggerHeight)
         {
-            _enlargeContentTriggerHeight += _prefabHeight;
+            _enlargeContentTriggerHeight += _prefabHeight/10;
 
-            await LoadAndInstantiateImageAsync(_imageNumbersList.Count + 1);
-            await LoadAndInstantiateImageAsync(_imageNumbersList.Count + 1);
+            await _prefabInstantiator.LoadAndInstantiatePrefabAsync();
         }
     }
 
@@ -89,4 +60,9 @@ public class ScrollViewHandler
     {
         _isAllowToEnlargeContent = false;
     }
+}
+
+public class ImageHolder
+{
+    public static Sprite _tempSprite;
 }

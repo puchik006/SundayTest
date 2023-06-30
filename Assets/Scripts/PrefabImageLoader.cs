@@ -5,7 +5,7 @@ using UnityEngine.Networking;
 
 public class PrefabImageLoader
 {
-    private string _picURL = "http://data.ikppbb.com/test-task-unity-data/pics/*.jpg";
+    private string _picURL = "http://data.ikppbb.com/test-task-unity-data/pics/*.jpg"; // put in the constructor
     public static Action<int> OnError;
 
     public async Task<Sprite> LoadImageAsync(int picNumber)
