@@ -26,6 +26,7 @@ public class SceneLoader
         MainSceneButtonHandler.OnButtonPressed += () => StartLoadingScene(SceneIndexes.Gallery);
         PrefabInstantiator.OnButtonPressed += () => StartLoadingScene(SceneIndexes.FullPaigeView);
         ExitButtonHandler.OnButtonPressed += () => StartLoadingScene(SceneIndexes.Gallery);
+        MobileNativeFunctions.GoBack += () => StartLoadingScene(_scenes.Peek() > (int)SceneIndexes.Main ? (SceneIndexes)_scenes.Peek() - 1 : SceneIndexes.Main);
     }
 
     private void StartLoadingScene(SceneIndexes sceneIndex)
@@ -36,6 +37,7 @@ public class SceneLoader
         _timer.OnHasBeenUpdated += _loadingScreenView.ShowLoadingProgress;
         _loadSceneCallback = () => LoadScene(sceneIndex);
         _timer.OnTimeIsOver += OnTimeIsOverHandler;
+        _scenesLoading.Add(SceneManager.UnloadSceneAsync(_scenes.Pop()));
     }
 
     private void OnTimeIsOverHandler()
@@ -45,7 +47,6 @@ public class SceneLoader
 
     private void LoadScene(SceneIndexes sceneIndex)
     {
-        _scenesLoading.Add(SceneManager.UnloadSceneAsync(_scenes.Pop()));
         _scenesLoading.Add(SceneManager.LoadSceneAsync((int)sceneIndex, LoadSceneMode.Additive));
         _scenes.Push((int)sceneIndex);
         _loadingScreenView.StartCoroutine(GetSceneLoadProgress());

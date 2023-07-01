@@ -20,6 +20,7 @@ public class PrefabInstantiator
         GalleryView.OnAwake += GetGalleryViewData;
         MainSceneButtonHandler.OnButtonPressed += SetInstantiatorToWork;
         ExitButtonHandler.OnButtonPressed += SetInstantiatorToWork;
+        MobileNativeFunctions.GoBack += SetInstantiatorToWork;
 
         _prefabImageLoader = prefabImageLoader;
     }
