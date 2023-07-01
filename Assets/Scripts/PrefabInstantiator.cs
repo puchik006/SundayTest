@@ -67,7 +67,7 @@ public class PrefabInstantiator
         prefab.GetComponentInChildren<Button>().onClick.AddListener(() =>
         {
             OnButtonPressed?.Invoke();
-            ImageHolder._tempSprite = sprite;
+            ImageHolder.Instance.TempSprite = sprite;
         });
     }
 }

@@ -11,6 +11,7 @@ public class SceneLoader
     private List<AsyncOperation> _scenesLoading = new List<AsyncOperation>();
     private Stack<int> _scenes = new Stack<int>();
     private Action _loadSceneCallback;
+    public static Action<SceneIndexes> OnSceneLoaded;
     private int _timeToLoadScene;
 
     public SceneLoader(LoadingScreen loadingScreenView, GameConfig gameConfig)
@@ -30,7 +31,7 @@ public class SceneLoader
     private void StartLoadingScene(SceneIndexes sceneIndex)
     {
         _loadingScreenView.TurnScreenOn();
-        _timer.Set(2);
+        _timer.Set(_timeToLoadScene);
         _timer.StartCountingTime();
         _timer.OnHasBeenUpdated += _loadingScreenView.ShowLoadingProgress;
         _loadSceneCallback = () => LoadScene(sceneIndex);
@@ -48,6 +49,7 @@ public class SceneLoader
         _scenesLoading.Add(SceneManager.LoadSceneAsync((int)sceneIndex, LoadSceneMode.Additive));
         _scenes.Push((int)sceneIndex);
         _loadingScreenView.StartCoroutine(GetSceneLoadProgress());
+        OnSceneLoaded?.Invoke(sceneIndex);
         _timer.OnHasBeenUpdated -= _loadingScreenView.ShowLoadingProgress;
         _timer.OnTimeIsOver -= OnTimeIsOverHandler;
     }

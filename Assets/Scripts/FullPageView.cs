@@ -9,6 +9,6 @@ public class FullPageView: MonoBehaviour
     private void Awake()
     {
         _image = GetComponent<Image>();
-        _image.sprite = ImageHolder._tempSprite;
+        _image.sprite = ImageHolder.Instance.TempSprite;
     }
 }
