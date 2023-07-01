@@ -11,34 +11,35 @@ public class PrefabInstantiator
     public static Action OnButtonPressed;
 
     private RectTransform _content;
-    private int _currentImageNumber = 1;
     private int _currentLoadingImage = 1;
     private GameObject _prefab;
     private Dictionary<int?, Sprite> _loadedSprites = new Dictionary<int?, Sprite>();
 
-    public PrefabInstantiator(GameObject prefab, RectTransform content, MonoBehaviour context)
+    public PrefabInstantiator(PrefabImageLoader prefabImageLoader)
     {
-        _prefab = prefab;
-        _content = content;
-        _context = context;
-
+        GalleryView.OnAwake += GetGalleryViewData;
         MainSceneButtonHandler.OnButtonPressed += SetInstantiatorToWork;
         ExitButtonHandler.OnButtonPressed += SetInstantiatorToWork;
 
-        _prefabImageLoader = new PrefabImageLoader();
+        _prefabImageLoader = prefabImageLoader;
+    }
+
+    private void GetGalleryViewData(GalleryView galleryView)
+    {
+        _content = galleryView.Content;
+        _prefab = galleryView.Prefab;
+        _context = galleryView;
     }
 
     private void SetInstantiatorToWork()
     {
-        _currentImageNumber = 1;
         _currentLoadingImage = 1;
+        _loadedSprites.Clear();
     }
 
-    public void LoadAndInstantiatePrefab()
+    public void LoadAndInstantiatePrefab(int picNumber)
     {
-        int picNumber = _currentImageNumber;
         _context.StartCoroutine(_prefabImageLoader.LoadImage(picNumber, OnImageLoaded));
-        _currentImageNumber++;
     }
 
     private void OnImageLoaded(Sprite sprite, int? loadedPictureNumber)

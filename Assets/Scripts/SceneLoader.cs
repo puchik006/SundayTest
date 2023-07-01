@@ -10,18 +10,19 @@ public class SceneLoader
     private Timer _timer;
     private List<AsyncOperation> _scenesLoading = new List<AsyncOperation>();
     private Stack<int> _scenes = new Stack<int>();
-    private Action _loadSceneCallback; 
+    private Action _loadSceneCallback;
+    private int _timeToLoadScene;
 
-    public SceneLoader(LoadingScreen loadingScreenView)
+    public SceneLoader(LoadingScreen loadingScreenView, GameConfig gameConfig)
     {
         _loadingScreenView = loadingScreenView;
         _timer = new Timer(_loadingScreenView);
+        _timeToLoadScene = gameConfig.TimeToLoad;
 
         SceneManager.LoadSceneAsync((int)SceneIndexes.Main, LoadSceneMode.Additive);
         _scenes.Push((int)SceneIndexes.Main);
 
         MainSceneButtonHandler.OnButtonPressed += () => StartLoadingScene(SceneIndexes.Gallery);
-        //ScrollViewHandler.OnButtonPressed += () => StartLoadingScene(SceneIndexes.FullPaigeView);
         PrefabInstantiator.OnButtonPressed += () => StartLoadingScene(SceneIndexes.FullPaigeView);
         ExitButtonHandler.OnButtonPressed += () => StartLoadingScene(SceneIndexes.Gallery);
     }

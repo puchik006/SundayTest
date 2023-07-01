@@ -5,8 +5,13 @@ using UnityEngine.Networking;
 
 public class PrefabImageLoader
 {
-    private string _picURL = "http://data.ikppbb.com/test-task-unity-data/pics/*.jpg";
-    public static Action<int> OnError;
+    private string _picURL;
+    public static Action OnError;
+
+    public PrefabImageLoader(GameConfig gameConfig)
+    {
+        _picURL = gameConfig.Url;
+    }
 
     public IEnumerator LoadImage(int picNumber, Action<Sprite,int?> callback)
     {
@@ -18,7 +23,7 @@ public class PrefabImageLoader
 
         if (operation.webRequest.result == UnityWebRequest.Result.ConnectionError || operation.webRequest.result == UnityWebRequest.Result.ProtocolError)
         {
-            OnError?.Invoke(picNumber);
+            OnError?.Invoke();
             callback?.Invoke(null,null);
         }
         else

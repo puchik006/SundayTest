@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using static System.Net.WebRequestMethods;
 
 public class ImageHolder
 {

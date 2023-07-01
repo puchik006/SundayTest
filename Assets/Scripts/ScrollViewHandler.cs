@@ -12,8 +12,12 @@ public class ScrollViewHandler
     private float _enlargeContentTriggerHeight;
     private bool _isAllowToEnlargeContent = true;
 
-    public ScrollViewHandler()
+    private int _picCounter;
+
+    public ScrollViewHandler(PrefabInstantiator prefabInstantiator)
     {
+        _prefabInstantiator = prefabInstantiator;
+
         GalleryView.OnAwake += GetGalleryViewData;
         GalleryView.OnScroll += EnlargeContentOnScrolling;
         PrefabImageLoader.OnError += StopEnlargingContent;
@@ -25,10 +29,8 @@ public class ScrollViewHandler
         _viewPort = galleryView.ViewPort;
         _prefab = galleryView.Prefab;
 
-        _prefabInstantiator = new PrefabInstantiator(_prefab, _content, galleryView);
-
         _prefabHeight = _prefab.GetComponent<RectTransform>().rect.height;
-        _enlargeContentTriggerHeight = _prefabHeight/3;
+        _enlargeContentTriggerHeight = _content.localPosition.y;
 
         _isAllowToEnlargeContent = true;
 
@@ -39,9 +41,10 @@ public class ScrollViewHandler
     {
         float numberOfRows = _viewPort.rect.height / _prefabHeight;
 
-        for (int i = 1; i < numberOfRows * 2; i++)
+        for (int i = 1; i < numberOfRows * 2; i++) // 2 replace to number of columns
         {
-            _prefabInstantiator.LoadAndInstantiatePrefab();
+            _prefabInstantiator.LoadAndInstantiatePrefab(i);
+            _picCounter = i;
         }
     }
 
@@ -49,15 +52,23 @@ public class ScrollViewHandler
     {
         if (!_isAllowToEnlargeContent) return;
 
+        int previousLoadedPicturesNumber = _picCounter;
+
         if (_content.localPosition.y > _enlargeContentTriggerHeight)
         {
-            _enlargeContentTriggerHeight += _prefabHeight/2;
-            _prefabInstantiator.LoadAndInstantiatePrefab();
+            _enlargeContentTriggerHeight += _prefabHeight;
+            _picCounter += 2;
+
+            for (int i = previousLoadedPicturesNumber; i < _picCounter; i++)
+            {
+                _prefabInstantiator.LoadAndInstantiatePrefab(i);
+            }
         }
     }
 
-    private void StopEnlargingContent(int imageNumber)
+    private void StopEnlargingContent()
     {
         _isAllowToEnlargeContent = false;
     }
 }
+
