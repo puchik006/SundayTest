@@ -5,9 +5,9 @@ using UnityEngine.Networking;
 
 public class PrefabImageLoader
 {
-    private string _picURL;
     public static Action OnError;
-
+    private string _picURL;
+    
     public PrefabImageLoader(GameConfig gameConfig)
     {
         _picURL = gameConfig.Url;

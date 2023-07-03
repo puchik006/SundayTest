@@ -6,13 +6,14 @@ using UnityEngine.SceneManagement;
 
 public class SceneLoader
 {
+    public static Action<SceneIndexes> OnSceneLoaded;
     private LoadingScreen _loadingScreenView;
     private Timer _timer;
     private List<AsyncOperation> _scenesLoading = new List<AsyncOperation>();
     private Stack<int> _scenes = new Stack<int>();
     private Action _loadSceneCallback;
-    public static Action<SceneIndexes> OnSceneLoaded;
     private int _timeToLoadScene;
+    private const int SCENE_STEP_BACK = 1;
 
     public SceneLoader(LoadingScreen loadingScreenView, GameConfig gameConfig)
     {
@@ -26,7 +27,7 @@ public class SceneLoader
         MainSceneButtonHandler.OnButtonPressed += () => StartLoadingScene(SceneIndexes.Gallery);
         PrefabInstantiator.OnButtonPressed += () => StartLoadingScene(SceneIndexes.FullPaigeView);
         ExitButtonHandler.OnButtonPressed += () => StartLoadingScene(SceneIndexes.Gallery);
-        MobileNativeFunctions.GoBack += () => StartLoadingScene(_scenes.Peek() > (int)SceneIndexes.Main ? (SceneIndexes)_scenes.Peek() - 1 : SceneIndexes.Main);
+        MobileNativeFunctions.GoBack += () => StartLoadingScene(_scenes.Peek() > (int)SceneIndexes.Main ? (SceneIndexes)_scenes.Peek() - SCENE_STEP_BACK : SceneIndexes.Main);
     }
 
     private void StartLoadingScene(SceneIndexes sceneIndex)

@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-public class GalleryView : MonoBehaviour
+public class GalleryView : MonoBehaviour, IGalleryView, IContext
 {
     [SerializeField] private RectTransform _content;
     [SerializeField] private RectTransform _viewPort;
@@ -10,17 +10,20 @@ public class GalleryView : MonoBehaviour
     public RectTransform Content { get => _content;}
     public RectTransform ViewPort { get => _viewPort;}
     public GameObject Prefab { get => _prefab;}
+    public MonoBehaviour Context => this;
 
     public static Action OnScroll;
-    public static Action<GalleryView> OnAwake;
+    public static Action<IGalleryView> OnGalleryViewAwake;
+    public static Action<IContext> OnGalleryContextAwake;
+
+    private void Awake()
+    {
+        OnGalleryContextAwake?.Invoke(this);
+        OnGalleryViewAwake?.Invoke(this);
+    }
 
     public void ScrollAction()
     {
         OnScroll?.Invoke();
-    }
-
-    private void Awake()
-    {
-        OnAwake?.Invoke(this);
     }
 }

@@ -6,41 +6,31 @@ using Object = UnityEngine.Object;
 
 public class PrefabInstantiator
 {
-    private MonoBehaviour _context;
-    private PrefabImageLoader _prefabImageLoader;
     public static Action OnButtonPressed;
-
-    private RectTransform _content;
-    private int _currentLoadingImage = 1;
-    private GameObject _prefab;
+    private PrefabImageLoader _prefabImageLoader;
+    private IGalleryView _galleryView;
+    private IContext _context;
     private Dictionary<int?, Sprite> _loadedSprites = new Dictionary<int?, Sprite>();
+    private const int STARTING_INDEX = 1;
+    private int _currentLoadingImage = STARTING_INDEX;
 
     public PrefabInstantiator(PrefabImageLoader prefabImageLoader)
     {
-        GalleryView.OnAwake += GetGalleryViewData;
-        MainSceneButtonHandler.OnButtonPressed += SetInstantiatorToWork;
-        ExitButtonHandler.OnButtonPressed += SetInstantiatorToWork;
-        MobileNativeFunctions.GoBack += SetInstantiatorToWork;
-
         _prefabImageLoader = prefabImageLoader;
-    }
-
-    private void GetGalleryViewData(GalleryView galleryView)
-    {
-        _content = galleryView.Content;
-        _prefab = galleryView.Prefab;
-        _context = galleryView;
-    }
-
-    private void SetInstantiatorToWork()
-    {
-        _currentLoadingImage = 1;
-        _loadedSprites.Clear();
+        GalleryView.OnGalleryContextAwake += (context) => _context = context;
+        GalleryView.OnGalleryViewAwake += GetGalleryViewData;
     }
 
     public void LoadAndInstantiatePrefab(int picNumber)
     {
-        _context.StartCoroutine(_prefabImageLoader.LoadImage(picNumber, OnImageLoaded));
+        _context.Context.StartCoroutine(_prefabImageLoader.LoadImage(picNumber, OnImageLoaded));
+    }
+
+    private void GetGalleryViewData(IGalleryView galleryView)
+    {       
+        _galleryView = galleryView;
+        _currentLoadingImage = STARTING_INDEX;
+        _loadedSprites.Clear();
     }
 
     private void OnImageLoaded(Sprite sprite, int? loadedPictureNumber)
@@ -62,7 +52,7 @@ public class PrefabInstantiator
 
     private void InstantiateAndSetPrefabBehaviour(Sprite sprite)
     {
-        var prefab = Object.Instantiate(_prefab, _content);
+        var prefab = Object.Instantiate(_galleryView.Prefab, _galleryView.Content);
 
         prefab.GetComponentInChildren<Image>().sprite = sprite;
         prefab.GetComponentInChildren<Button>().onClick.AddListener(() =>
