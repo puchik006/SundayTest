@@ -3,14 +3,12 @@ using UnityEngine;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(Button))]
-public class ExitButtonHandler : MonoBehaviour
+public class ExitButtonHandler : BasicButton
 {
-    private Button _btnExit;
     public static Action OnButtonPressed;
 
-    private void Awake()
+    protected override void ButtonAction()
     {
-        _btnExit = GetComponent<Button>();
-        _btnExit.onClick.AddListener(() => OnButtonPressed?.Invoke());
+        OnButtonPressed?.Invoke();
     }
 }

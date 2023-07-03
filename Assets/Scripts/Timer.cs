@@ -4,15 +4,12 @@ using UnityEngine;
 
 public class Timer
 {
-    private float _time;
-    private float _remainingTime;
-
-    private IEnumerator _countdown;
-
-    private MonoBehaviour _context;
-
     public Action<float> OnHasBeenUpdated;
     public Action OnTimeIsOver;
+    private IEnumerator _countdown;
+    private MonoBehaviour _context;
+    private float _time;
+    private float _remainingTime;
 
     public Timer(MonoBehaviour context)
     {
@@ -44,9 +41,7 @@ public class Timer
         while (_remainingTime >= 0)
         {
             _remainingTime -= Time.deltaTime;
-
             OnHasBeenUpdated?.Invoke((_time - _remainingTime) / _time);
-
             yield return null;
         }
 

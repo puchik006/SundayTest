@@ -1,10 +1,11 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 public class ImageHolder
 {
-    private static ImageHolder _instance;
     public Sprite TempSprite;
-
+    private static ImageHolder _instance;
+    
     public static ImageHolder Instance
     {
         get
